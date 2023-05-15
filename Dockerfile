@@ -60,7 +60,6 @@ RUN apt-get update && apt-get install -y \
 
 # Set the workdir
 WORKDIR /home/slurm
-USER slurm
 
 # Clone the Slurm Simulator repository
 RUN git clone https://github.com/BSC-RM/slurm_simulator_tools.git
@@ -77,4 +76,39 @@ RUN ./install_slurm_sim.sh
 RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install jupyter jupyterlab mysqlclient numpy Flask pandas scikit-learn catboost torch
 
+
+# USER slurm
+# Здесь устанавливаются пакеты, необходимые для Анализа и удобной разработки
+# Всё это можно закоментировать
+
+
+# Install R packages
+RUN apt-get update &&\
+    apt-get install -y r-base r-cran-rcpp --fix-missing
+
+WORKDIR /home/slurm
+RUN git clone https://github.com/ubccr-slurm-simulator/slurm_sim_tools.git
+# Install packages for working with R vizualization
+# It is from another simualtor (https://github.com/ubccr-slurm-simulator/slurm_sim_tools) 
+RUN Rscript /home/slurm/slurm_sim_tools/docker/slurm_sim/package_install.R
+RUN rm -rf /home/slurm/slurm_sim_tools
+
+RUN echo "N" | apt-get install -y sudo
+# USER slurm
+
+RUN Rscript -e 'install.packages(c("repr", "IRdisplay", "IRkernel"), type = "source", repos="https://cran.rstudio.com");'
+RUN export PATH="$PATH:$HOME/.local/bin"
+# RUN pip install 
+RUN Rscript -e 'install.packages("jupyter-client", repos="https://cran.rstudio.com")'
+RUN Rscript -e 'IRkernel::installspec(user=FALSE)'
+
+
+# Установим библиотеку, чтобы запускать R в JУстановим JupyterLab и ядро для языка R
+# Пример:
+#       import rpy2
+#       %load_ext rpy2.ipython
+#       %%R s <- "Hello world"
+RUN python3 -m pip install rpy2
+
+USER slurm
 
