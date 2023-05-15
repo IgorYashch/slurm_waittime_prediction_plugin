@@ -62,16 +62,16 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /home/slurm
 
 # Clone the Slurm Simulator repository
+USER slurm
 RUN git clone https://github.com/BSC-RM/slurm_simulator_tools.git
 
 WORKDIR /home/slurm/slurm_simulator_tools
-
 # Make the installation script executable
 RUN chmod +x install_slurm_sim.sh
 
 # Install slurm simulator and tools
 RUN ./install_slurm_sim.sh
-
+USER root
 # Install python packages
 RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install jupyter jupyterlab mysqlclient numpy Flask pandas scikit-learn catboost torch
@@ -110,5 +110,8 @@ RUN Rscript -e 'IRkernel::installspec(user=FALSE)'
 #       %%R s <- "Hello world"
 RUN python3 -m pip install rpy2
 
+RUN python3 -m pip install bash_kernel && python3 -m bash_kernel.install
 USER slurm
 
+ENV SHELL=/bin/bash
+CMD ["jupyter", "lab", "--ip", "0.0.0.0", "--no-browser", "--allow-root"]
