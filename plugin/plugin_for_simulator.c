@@ -26,7 +26,6 @@ extern int job_submit(struct job_descriptor *job_desc, uint32_t submit_uid, char
 {
     const char *argumet_for_plugin = "predict-time";
 
-    // Assume this function is defined somewhere in your code and converts the job_desc to a JSON string
     char *json_message = description_to_json(job_desc);
 
     CURL *curl = curl_easy_init();

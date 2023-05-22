@@ -1,0 +1,18 @@
+--- /home/slurm/workdir/simulator.c	2023-05-21 10:27:04.021974000 +0000
++++ /home/slurm/slurm_sim_ws/slurm_simulator/src/slurmctld/simulator.c	2023-05-21 10:39:29.222083394 +0000
+@@ -243,6 +243,15 @@
+ 
+ 	job_desc_msg_t *job_desc_msg = (job_desc_msg_t *) msg->data;
+ 
++    // Add code for plugin working (in real Slurm it used in _slurm_rpc_allocate_het_job)
++    char *job_submit_user_msg = NULL;
++	error_code = validate_job_create_req(job_desc_msg, NULL, &job_submit_user_msg);
++	if(error_code!=SLURM_SUCCESS){
++		info("_slurm_submit_job_plugin(by Igor): %s\n\t%s",
++			     slurm_strerror(error_code),err_msg);
++	}
++    
++    
+ 	error_code = job_allocate(job_desc_msg,
+ 							  job_desc_msg->immediate,
+ 							  false, NULL, 0, uid, &job_ptr,
